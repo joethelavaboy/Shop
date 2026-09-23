@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apex Store - E-Commerce Shop</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Liquid Glass Aesthetics */
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px 0 rgba(37, 99, 235, 0.08);
+        }
+        .liquid-glass-blue {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.85), rgba(14, 165, 233, 0.75));
+            backdrop-filter: blur(20px) saturate(200%);
+            -webkit-backdrop-filter: blur(20px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 0 12px 40px 0 rgba(14, 165, 233, 0.25);
+        }
+        .liquid-glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(224, 242, 254, 0.8);
+        }
+        .liquid-glass-card:hover {
+            border-color: rgba(56, 189, 248, 0.8);
+            box-shadow: 0 14px 30px -10px rgba(14, 165, 233, 0.25);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f0f9ff;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #bae6fd;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #38bdf8;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-sky-50/50 to-blue-100/40 text-slate-800 min-h-screen flex flex-col justify-between antialiased pb-16 md:pb-0 relative overflow-x-hidden">
+
+    <!-- Ambient Liquid Glass Glow Background Blobs -->
+    <div class="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-400/20 rounded-full blur-3xl pointer-events-none -z-10"></div>
+    <div class="fixed bottom-[-10%] right-[-5%] w-[600px] h-[600px] bg-sky-300/25 rounded-full blur-3xl pointer-events-none -z-10"></div>
+
+    <!-- HEADER BAR WITH LIQUID GLASS -->
+    <header class="sticky top-0 z-40 liquid-glass border-b border-white/50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-3 sm:gap-4">
+            
+            <!-- Logo Placeholder -->
+            <a href="#" class="flex-shrink-0 flex items-center transition-transform hover:scale-105">
+                <img src="https://placehold.co/120x45/0284c7/ffffff?text=LOGO" 
+                     alt="Store Logo" 
+                     class="h-9 sm:h-11 w-auto rounded-xl shadow-md border border-white/40 object-cover"
+                     onerror="this.onerror=null; this.src='https://placehold.co/120x45/0284c7/ffffff?text=LOGO'">
+            </a>
+
+            <!-- Search Bar -->
+            <div class="flex-1 max-w-xl mx-1 sm:mx-6">
+                <div class="relative">
+                    <input type="text" 
+                           id="searchInput" 
+                           placeholder="Search blue products..." 
+                           class="w-full pl-9 sm:pl-10 pr-8 py-2 sm:py-2.5 bg-white/70 border border-blue-100 rounded-full focus:bg-white focus:border-sky-500 focus:outline-none focus:ring-4 focus:ring-sky-100 transition-all text-xs sm:text-sm font-medium shadow-inner">
+                    <div class="absolute inset-y-0 left-0 pl-3 sm:pl-3.5 flex items-center pointer-events-none text-sky-500">
+                        <i class="fa-solid fa-magnifying-glass text-xs sm:text-sm"></i>
+                    </div>
+                    <button id="clearSearch" class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
+                        <i class="fa-solid fa-xmark text-xs sm:text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Desktop Cart Trigger Button -->
+            <button id="cartBtn" class="relative p-2.5 text-blue-900 hover:text-blue-600 hover:bg-white/80 rounded-full transition-all focus:outline-none border border-transparent hover:border-white/60">
+                <i class="fa-solid fa-bag-shopping text-xl"></i>
+                <span id="cartBadge" class="absolute -top-1 -right-1 bg-sky-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white scale-0 transition-transform duration-200 shadow">0</span>
+            </button>
+
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 flex-grow w-full">
+
+        <!-- 3 MAIN CATEGORY TABS WITH GLASSMORPHISM -->
+        <section class="mb-6">
+            <div class="liquid-glass p-1.5 sm:p-2 rounded-2xl flex items-center justify-between gap-1 sm:gap-2 shadow-sm border border-white/60 max-w-2xl mx-auto">
+                <button id="tab-all" onclick="switchTab('all')" class="tab-btn flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2 bg-blue-600 text-white shadow-md shadow-blue-500/20">
+                    <i class="fa-solid fa-grid-2 text-xs"></i> <span>All Items</span>
+                </button>
+                <button id="tab-deals" onclick="switchTab('deals')" class="tab-btn flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-white/60 transition-all duration-300 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-bolt text-amber-500 text-xs"></i> <span>Flash Deals</span>
+                </button>
+                <button id="tab-new" onclick="switchTab('new')" class="tab-btn flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-white/60 transition-all duration-300 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-sparkles text-sky-400 text-xs"></i> <span>New Arrivals</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- PROMOTIONAL BANNER WITH LIQUID GLASS OVERLAY -->
+        <section class="relative rounded-3xl overflow-hidden mb-8 shadow-xl shadow-blue-500/10 group border border-white/60">
+            <img src="https://placehold.co/1200x350/0284c7/ffffff?text=OCEAN+BLUE+COLLECTION+-+UP+TO+50%+OFF" 
+                 alt="Promotional Banner" 
+                 class="w-full h-44 sm:h-64 lg:h-80 object-cover group-hover:scale-105 transition-transform duration-700"
+                 onerror="this.onerror=null; this.src='https://placehold.co/1200x350/0284c7/ffffff?text=Blue+Special+Offers+Banner'">
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-950/80 via-blue-900/40 to-transparent flex flex-col justify-center px-5 sm:px-12 text-white">
+                <div class="liquid-glass-blue p-4 sm:p-6 rounded-2xl max-w-md border border-white/30 backdrop-blur-md">
+                    <span class="bg-sky-400/30 text-sky-100 border border-sky-300/40 text-[10px] sm:text-xs uppercase tracking-widest font-bold py-1 px-3 rounded-full w-max mb-2 inline-block">Liquid Glass Edition</span>
+                    <h1 class="text-xl sm:text-3xl lg:text-4xl font-extrabold mb-1 tracking-tight text-white drop-shadow">Next-Gen Tech & Accessories</h1>
+                    <p class="text-sky-100 text-xs sm:text-sm mb-4 hidden sm:block">Explore our modern blue palette styled with sleek liquid glass components.</p>
+                    <div>
+                        <a href="#products" class="inline-flex items-center px-4 py-2 sm:px-5 sm:py-2.5 bg-white text-blue-700 hover:bg-sky-50 text-xs sm:text-sm font-bold rounded-xl shadow-lg transition-all hover:scale-105 active:scale-95">
+                            Explore Catalog <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRODUCTS SECTION HEADER & CONTROLS -->
+        <section id="products" class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-blue-100/60 pb-4">
+            <div>
+                <h2 id="sectionTitle" class="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="w-2.5 h-6 bg-blue-600 rounded-full inline-block"></span> All Products
+                </h2>
+                <p class="text-slate-500 text-xs sm:text-sm ml-4">Showing <span id="itemCount" class="font-bold text-blue-600">12</span> available items</p>
+            </div>
+
+            <!-- Sorting & Filter dropdowns -->
+            <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                <select id="categoryFilter" class="liquid-glass text-slate-700 text-xs sm:text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-500 focus:outline-none border border-white/80 shadow-sm font-medium">
+                    <option value="all">All Categories</option>
+                    <option value="electronics">Electronics</option>
+                    <option value="wearables">Wearables</option>
+                    <option value="lifestyle">Lifestyle</option>
+                    <option value="accessories">Accessories</option>
+                </select>
+
+                <select id="sortSelect" class="liquid-glass text-slate-700 text-xs sm:text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-500 focus:outline-none border border-white/80 shadow-sm font-medium">
+                    <option value="featured">Featured Sort</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="rating">Top Rated</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- PRODUCT GRID (12 ITEMS WITH LIQUID GLASS CARDS) -->
+        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            <!-- Product cards will be rendered here dynamically -->
+        </div>
+
+        <!-- NO RESULTS MESSAGE -->
+        <div id="noResults" class="hidden text-center py-16">
+            <div class="w-16 h-16 mx-auto liquid-glass rounded-2xl flex items-center justify-center text-sky-500 mb-4 text-2xl shadow-sm">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800 mb-1">No products found</h3>
+            <p class="text-slate-500 text-xs sm:text-sm mb-4">Try searching with a different keyword or tab.</p>
+            <button id="resetSearch" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs sm:text-sm font-semibold hover:bg-blue-700 transition shadow-md shadow-blue-500/20">Reset Filters</button>
+        </div>
+    </main>
+
+    <!-- MOBILE ASPECT RATIO / SMARTPHONE BOTTOM NAVIGATION BAR -->
+    <nav class="fixed bottom-0 left-0 right-0 z-40 liquid-glass border-t border-white/80 md:hidden px-4 py-2 flex justify-around items-center shadow-lg">
+        <button onclick="switchTab('all')" class="flex flex-col items-center gap-1 text-blue-600">
+            <i class="fa-solid fa-store text-lg"></i>
+            <span class="text-[10px] font-bold">Shop</span>
+        </button>
+        <button onclick="switchTab('deals')" class="flex flex-col items-center gap-1 text-slate-500 hover:text-blue-600">
+            <i class="fa-solid fa-bolt text-lg text-amber-500"></i>
+            <span class="text-[10px] font-medium">Deals</span>
+        </button>
+        <button onclick="openCart()" class="relative flex flex-col items-center gap-1 text-slate-500 hover:text-blue-600">
+            <div class="relative">
+                <i class="fa-solid fa-bag-shopping text-lg"></i>
+                <span id="mobileCartBadge" class="absolute -top-1.5 -right-2 bg-sky-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full scale-0 transition-transform">0</span>
+            </div>
+            <span class="text-[10px] font-medium">Cart</span>
+        </button>
+        <button onclick="document.getElementById('searchInput').focus()" class="flex flex-col items-center gap-1 text-slate-500 hover:text-blue-600">
+            <i class="fa-solid fa-magnifying-glass text-lg"></i>
+            <span class="text-[10px] font-medium">Search</span>
+        </button>
+    </nav>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 py-10 sm:py-12 mt-12 sm:mt-16 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center sm:text-left">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <img src="https://placehold.co/120x45/0284c7/ffffff?text=LOGO" alt="Footer Logo" class="h-9 mb-4 rounded-lg mx-auto sm:mx-0 border border-slate-700">
+                    <p class="text-xs sm:text-sm text-slate-400">Delivering liquid-smooth shopping experiences with premium products and blue glass aesthetics.</p>
+                </div>
+                    <button id="clearSearch" class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cart Trigger Button -->
+            <button id="cartBtn" class="relative p-2.5 text-slate-700 hover:text-indigo-600 hover:bg-slate-100 rounded-full transition-all focus:outline-none">
+                <i class="fa-solid fa-bag-shopping text-xl"></i>
+                <span id="cartBadge" class="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white scale-0 transition-transform duration-200">0</span>
+            </button>
+
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+        <!-- PROMOTIONAL BANNER -->
+        <section class="relative rounded-2xl overflow-hidden mb-8 shadow-md group">
+            <img src="https://placehold.co/1200x350/312e81/ffffff?text=SPRING+SALE+-+UP+TO+50%+OFF" 
+                 alt="Promotional Banner" 
+                 class="w-full h-48 sm:h-64 lg:h-80 object-cover group-hover:scale-105 transition-transform duration-500"
+                 onerror="this.onerror=null; this.src='https://placehold.co/1200x350/312e81/ffffff?text=Special+Offers+Banner'">
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-950/30 to-transparent flex flex-col justify-center px-6 sm:px-12 text-white">
+                <span class="bg-indigo-600 text-xs uppercase tracking-widest font-semibold py-1 px-3 rounded-full w-max mb-3 shadow">Limited Time Deal</span>
+                <h1 class="text-2xl sm:text-4xl font-extrabold mb-2 tracking-tight">Upgrade Your Style Today</h1>
+                <p class="text-slate-200 text-sm sm:text-base max-w-md mb-4 hidden sm:block">Explore our flagship lineup with premium design and exceptional performance.</p>
+                <div>
+                    <a href="#products" class="inline-flex items-center px-5 py-2.5 bg-white text-indigo-900 hover:bg-indigo-50 text-sm font-semibold rounded-lg shadow-sm transition-all hover:shadow">
+                        Shop Collection <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRODUCTS SECTION HEADER & CONTROLS -->
+        <section id="products" class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+            <div>
+                <h2 class="text-xl font-bold text-slate-900">Featured Products</h2>
+                <p class="text-slate-500 text-sm">Showing <span id="itemCount">12</span> available items</p>
+            </div>
+
+            <!-- Sorting & Category Filter -->
+            <div class="flex flex-wrap items-center gap-3">
+                <select id="categoryFilter" class="bg-white border border-slate-300 text-slate-700 text-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <option value="all">All Categories</option>
+                    <option value="electronics">Electronics</option>
+                    <option value="wearables">Wearables</option>
+                    <option value="lifestyle">Lifestyle</option>
+                    <option value="accessories">Accessories</option>
+                </select>
+
+                <select id="sortSelect" class="bg-white border border-slate-300 text-slate-700 text-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <option value="featured">Featured Sort</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="rating">Top Rated</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- PRODUCT GRID (12 ITEMS) -->
+        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Product cards will be rendered here dynamically -->
+        </div>
+
+        <!-- NO RESULTS MESSAGE -->
+        <div id="noResults" class="hidden text-center py-16">
+            <div class="w-16 h-16 mx-auto bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-4 text-2xl">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800 mb-1">No products found</h3>
+            <p class="text-slate-500 text-sm mb-4">Try searching with a different keyword or filter.</p>
+            <button id="resetSearch" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">Reset Filters</button>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 py-12 mt-16 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center sm:text-left">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <img src="https://placehold.co/120x45/312e81/ffffff?text=LOGO" alt="Footer Logo" class="h-9 mb-4 rounded mx-auto sm:mx-0">
+                    <p class="text-sm text-slate-400">Delivering quality products with seamless experience and reliable shipping worldwide.</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-3 text-sm">Quick Links</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white transition">About Us</a></li>
+                        <li><a href="#" class="hover:text-white transition">Shop All</a></li>
+                        <li><a href="#" class="hover:text-white transition">Promotions</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-3 text-sm">Customer Care</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white transition">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition">Returns Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition">Track Order</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-3 text-sm">Newsletter</h4>
+                    <p class="text-xs text-slate-400 mb-3">Subscribe for updates & exclusive offers.</p>
+                    <div class="flex">
+                        <input type="email" placeholder="Email address" class="px-3 py-2 text-xs bg-slate-800 border border-slate-700 rounded-l-md text-white focus:outline-none w-full">
+                        <button class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 rounded-r-md transition font-semibold">Join</button>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-slate-800 pt-6 text-xs text-center text-slate-500">
+                &copy; 2026 Apex Store Inc. All rights reserved. Liquid Glass Blue Edition.
+            </div>
+        </div>
+    </footer>
+
+    <!-- CART DRAWER OVERLAY -->
+    <div id="cartOverlay" class="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+    <!-- CART DRAWER PANEL WITH GLASS AESTHETIC -->
+    <aside id="cartDrawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-white/90 backdrop-blur-xl z-50 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-l border-white/60">
+        <!-- Drawer Header -->
+        <div class="p-4 sm:p-6 border-b border-blue-100 flex items-center justify-between liquid-glass">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-bag-shopping text-blue-600 text-lg"></i>
+                <h3 class="font-bold text-slate-900 text-lg">Your Cart</h3>
+                <span id="drawerCount" class="bg-sky-100 text-sky-800 text-xs font-bold px-2.5 py-0.5 rounded-full border border-sky-200">0 items</span>
+            </div>
+            <button id="closeCartBtn" class="p-2 text-slate-400 hover:text-slate-600 rounded-xl transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Drawer Content Items -->
+        <div id="cartItemsContainer" class="flex-grow overflow-y-auto p-4 sm:p-6 space-y-4">
+            <!-- Cart items inserted here -->
+        </div>
+
+        <!-- Drawer Footer / Summary -->
+        <div class="p-4 sm:p-6 border-t border-blue-100 liquid-glass">
+            <div class="space-y-2 mb-4 text-sm">
+                <div class="flex justify-between text-slate-500">
+                    <span>Subtotal</span>
+                    <span id="cartSubtotal" class="font-semibold text-slate-800">$0.00</span>
+                </div>
+                <div class="flex justify-between text-slate-500">
+                    <span>Shipping</span>
+                    <span class="text-sky-600 font-medium">FREE</span>
+                </div>
+                <div class="border-t border-slate-200/80 pt-2 flex justify-between text-base font-bold text-slate-900">
+                    <span>Total</span>
+                    <span id="cartTotal" class="text-blue-600">$0.00</span>
+                </div>
+            </div>
+            <button id="checkoutBtn" class="w-full py-3.5 bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 text-white font-bold rounded-xl shadow-lg shadow-blue-500/25 transition-all duration-200 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed">
+                Proceed to Checkout
+            </button>
+        </div>
+    </aside>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer" class="fixed bottom-20 md:bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        const products = [
+            {
+                id: 1,
+                name: "Wireless ANC Headphones",
+                category: "electronics",
+                price: 199.99,
+                rating: 4.8,
+                reviews: 124,
+                isDeal: true,
+                isNew: false,
+                image: "https://placehold.co/400x300/0284c7/ffffff?text=ANC+Headphones"
+            },
+            {
+                id: 2,
+                name: "Minimalist Smart Watch",
+                category: "wearables",
+                price: 149.50,
+                rating: 4.6,
+                reviews: 89,
+                isDeal: false,
+                isNew: true,
+                image: "https://placehold.co/400x300/0369a1/ffffff?text=Smart+Watch"
+            },
+            {
+                id: 3,
+                name: "Ergonomic Mechanical Keyboard",
+                category: "electronics",
+                price: 129.00,
+                rating: 4.9,
+                reviews: 210,
+                isDeal: true,
+                isNew: true,
+                image: "https://placehold.co/400x300/2563eb/ffffff?text=Keyboard"
+            },
+            {
+                id: 4,
+                name: "Precision Gaming Mouse",
+                category: "electronics",
+                price: 59.99,
+                rating: 4.5,
+                reviews: 65,
+                isDeal: false,
+                isNew: false,
+                image: "https://placehold.co/400x300/1d4ed8/ffffff?text=Gaming+Mouse"
+            },
+            {
+                id: 5,
+                name: "Compact Bluetooth Speaker",
+                category: "electronics",
+                price: 79.95,
+                rating: 4.4,
+                reviews: 42,
+                isDeal: true,
+                isNew: false,
+                image: "https://placehold.co/400x300/0ea5e9/ffffff?text=Bluetooth+Speaker"
+            },
+            {
+                id: 6,
+                name: "Urban Everyday Backpack",
+                category: "lifestyle",
+                price: 89.99,
+                rating: 4.7,
+                reviews: 156,
+                isDeal: false,
+                isNew: true,
+                image: "https://placehold.co/400x300/38bdf8/ffffff?text=Urban+Backpack"
+            },
+            {
+                id: 7,
+                name: "Insulated Stainless Bottle",
+                category: "lifestyle",
+                price: 34.99,
+                rating: 4.8,
+                reviews: 310,
+                isDeal: true,
+                isNew: false,
+                image: "https://placehold.co/400x300/1e40af/ffffff?text=Water+Bottle"
+            },
+            {
+                id: 8,
+                name: "Fitness Tracker Band",
+                category: "wearables",
+                price: 49.99,
+                rating: 4.2,
+                reviews: 78,
+                isDeal: false,
+                isNew: true,
+                image: "https://placehold.co/400x300/0284c7/ffffff?text=Fitness+Band"
+            },
+            {
+                id: 9,
+                name: "HD Desk Streaming Webcam",
+                category: "electronics",
+                price: 89.00,
+                rating: 4.3,
+                reviews: 94,
+                isDeal: false,
+                isNew: true,
+                image: "https://placehold.co/400x300/0369a1/ffffff?text=Desk+Webcam"
+            },
+            {
+                id: 10,
+                name: "Leather Minimalist Wallet",
+                category: "accessories",
+                price: 39.50,
+                rating: 4.7,
+                reviews: 188,
+                isDeal: true,
+                isNew: false,
+                image: "https://placehold.co/400x300/1d4ed8/ffffff?text=Leather+Wallet"
+            },
+            {
+                id: 11,
+                name: "Polarized Classic Sunglasses",
+                category: "accessories",
+                price: 64.00,
+                rating: 4.6,
+                reviews: 112,
+                isDeal: false,
+                isNew: true,
+                image: "https://placehold.co/400x300/0ea5e9/ffffff?text=Sunglasses"
+            },
+            {
+                id: 12,
+                name: "Desktop LED Task Lamp",
+                category: "lifestyle",
+                price: 45.99,
+                rating: 4.5,
+                reviews: 53,
+                isDeal: true,
+                isNew: false,
+                image: "https://placehold.co/400x300/38bdf8/ffffff?text=LED+Task+Lamp"
+            }
+        ];
+
+        let cart = [];
+        let currentActiveTab = 'all'; // 'all', 'deals', 'new'
+        
+        // DOM Elements
+        const productGrid = document.getElementById('productGrid');
+        const searchInput = document.getElementById('searchInput');
+        const clearSearchBtn = document.getElementById('clearSearch');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const sortSelect = document.getElementById('sortSelect');
+        const itemCount = document.getElementById('itemCount');
+        const sectionTitle = document.getElementById('sectionTitle');
+        const noResults = document.getElementById('noResults');
+        const resetSearchBtn = document.getElementById('resetSearch');
+        
+        // Cart DOM Elements
+        const cartBtn = document.getElementById('cartBtn');
+        const cartBadge = document.getElementById('cartBadge');
+        const mobileCartBadge = document.getElementById('mobileCartBadge');
+        const cartDrawer = document.getElementById('cartDrawer');
+        const cartOverlay = document.getElementById('cartOverlay');
+        const closeCartBtn = document.getElementById('closeCartBtn');
+        const cartItemsContainer = document.getElementById('cartItemsContainer');
+        const drawerCount = document.getElementById('drawerCount');
+        const cartSubtotal = document.getElementById('cartSubtotal');
+        const cartTotal = document.getElementById('cartTotal');
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        const toastContainer = document.getElementById('toastContainer');
+
+        function switchTab(tabKey) {
+            currentActiveTab = tabKey;
+
+            // Update Tab UI styles
+            ['all', 'deals', 'new'].forEach(key => {
+                const btn = document.getElementById(`tab-${key}`);
+                if (key === tabKey) {
+                    btn.className = "tab-btn flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2 bg-blue-600 text-white shadow-md shadow-blue-500/20";
+                } else {
+                    btn.className = "tab-btn flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-white/60 transition-all duration-300 flex items-center justify-center gap-2";
+                }
+            });
+
+            // Update Section Heading
+            if (tabKey === 'all') {
+                sectionTitle.innerHTML = `<span class="w-2.5 h-6 bg-blue-600 rounded-full inline-block"></span> All Products`;
+            } else if (tabKey === 'deals') {
+                sectionTitle.innerHTML = `<span class="w-2.5 h-6 bg-amber-500 rounded-full inline-block"></span> Flash Deals`;
+            } else if (tabKey === 'new') {
+                sectionTitle.innerHTML = `<span class="w-2.5 h-6 bg-sky-400 rounded-full inline-block"></span> New Arrivals`;
+            }
+
+            renderProducts();
+        }
+
+        function getStarRatingHTML(rating) {
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 >= 0.5;
+            let starsHTML = '';
+
+            for (let i = 0; i < fullStars; i++) {
+                starsHTML += '<i class="fa-solid fa-star text-amber-400"></i>';
+            }
+            if (hasHalfStar) {
+                starsHTML += '<i class="fa-solid fa-star-half-stroke text-amber-400"></i>';
+            }
+            const emptyStars = 5 - Math.ceil(rating);
+            for (let i = 0; i < emptyStars; i++) {
+                starsHTML += '<i class="fa-regular fa-star text-slate-300"></i>';
+            }
+            return starsHTML;
+        }
+
+        function renderProducts() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const category = categoryFilter.value;
+            const sortVal = sortSelect.value;
+
+            // Filter logic based on search, category dropdown, and active tab
+            let filtered = products.filter(product => {
+                const matchesSearch = product.name.toLowerCase().includes(searchTerm);
+                const matchesCategory = category === 'all' || product.category === category;
+                
+                let matchesTab = true;
+                if (currentActiveTab === 'deals') matchesTab = product.isDeal;
+                if (currentActiveTab === 'new') matchesTab = product.isNew;
+
+                return matchesSearch && matchesCategory && matchesTab;
+            });
+
+            // Sort logic
+            if (sortVal === 'price-low') {
+                filtered.sort((a, b) => a.price - b.price);
+            } else if (sortVal === 'price-high') {
+                filtered.sort((a, b) => b.price - a.price);
+            } else if (sortVal === 'rating') {
+                filtered.sort((a, b) => b.rating - a.rating);
+            }
+
+            itemCount.textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                productGrid.innerHTML = '';
+                noResults.classList.remove('hidden');
+                return;
+            } else {
+                noResults.classList.add('hidden');
+            }
+
+            productGrid.innerHTML = filtered.map(product => `
+                <div class="liquid-glass-card rounded-2xl overflow-hidden transition-all duration-300 flex flex-col justify-between group relative">
+                    <div>
+                        <!-- Product Badges -->
+                        <div class="absolute top-3 left-3 z-10 flex flex-col gap-1">
+                            ${product.isDeal ? '<span class="bg-amber-500/90 backdrop-blur-md text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm"><i class="fa-solid fa-bolt mr-1"></i>Sale</span>' : ''}
+                            ${product.isNew ? '<span class="bg-sky-500/90 backdrop-blur-md text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm"><i class="fa-solid fa-sparkles mr-1"></i>New</span>' : ''}
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="relative overflow-hidden bg-slate-100 aspect-video sm:aspect-square">
+                            <img src="${product.image}" 
+                                 alt="${product.name}" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/400x300/0284c7/ffffff?text=Product+Image'">
+                            <span class="absolute top-3 right-3 bg-white/80 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold text-blue-900 border border-white/60 shadow-sm capitalize">
+                                ${product.category}
+                            </span>
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="p-4">
+                            <h3 class="font-bold text-slate-900 text-sm sm:text-base mb-1 line-clamp-1 group-hover:text-blue-600 transition">
+                                ${product.name}
+                            </h3>
+
+                            <!-- Rating -->
+                            <div class="flex items-center gap-1.5 mb-2 text-xs">
+                                <div class="flex gap-0.5">
+                                    ${getStarRatingHTML(product.rating)}
+                                </div>
+                                <span class="font-semibold text-slate-700">${product.rating}</span>
+                                <span class="text-slate-400 text-[11px]">(${product.reviews})</span>
+                            </div>
+
+                            <!-- Price -->
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-lg sm:text-xl font-extrabold text-slate-900">$${product.price.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Actions -->
+                    <div class="px-4 pb-4">
+                        <button onclick="addToCart(${product.id})" 
+                                class="w-full py-2.5 px-4 bg-blue-50/80 hover:bg-gradient-to-r hover:from-blue-600 hover:to-sky-500 text-blue-700 hover:text-white font-bold text-xs sm:text-sm rounded-xl transition-all duration-300 flex items-center justify-center gap-2 border border-blue-200/60 hover:border-transparent hover:shadow-md hover:shadow-blue-500/20 active:scale-95">
+                            <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+
+            updateCartUI();
+            showToast(`Added <strong>${product.name}</strong> to cart!`);
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartUI();
+        }
+
+        function updateQuantity(productId, delta) {
+            const item = cart.find(i => i.id === productId);
+            if (!item) return;
+
+            item.quantity += delta;
+            if (item.quantity <= 0) {
+                removeFromCart(productId);
+            } else {
+                updateCartUI();
+            }
+        }
+
+        function updateCartUI() {
+            // Calculate total items and price
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            // Update Badges (Desktop & Mobile)
+            cartBadge.textContent = totalItems;
+            mobileCartBadge.textContent = totalItems;
+
+            if (totalItems > 0) {
+                cartBadge.classList.remove('scale-0');
+                mobileCartBadge.classList.remove('scale-0');
+            } else {
+                cartBadge.classList.add('scale-0');
+                mobileCartBadge.classList.add('scale-0');
+            }
+
+            drawerCount.textContent = `${totalItems} ${totalItems === 1 ? 'item' : 'items'}`;
+            cartSubtotal.textContent = `$${subtotal.toFixed(2)}`;
+            cartTotal.textContent = `$${subtotal.toFixed(2)}`;
+            checkoutBtn.disabled = cart.length === 0;
+
+            // Render items in drawer
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-center text-slate-400 py-12">
+                        <i class="fa-solid fa-basket-shopping text-4xl mb-3 text-blue-200"></i>
+                        <p class="font-medium text-slate-600">Your cart is empty</p>
+                        <p class="text-xs text-slate-400 mt-1">Explore our liquid glass store to add items!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            cartItemsContainer.innerHTML = cart.map(item => `
+                <div class="flex items-center gap-3 p-3 liquid-glass rounded-xl border border-white/80 shadow-sm">
+                    <img src="${item.image}" alt="${item.name}" class="w-14 h-14 object-cover rounded-lg bg-white border border-slate-100">
+                    <div class="flex-grow min-w-0">
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-800 truncate">${item.name}</h4>
+                        <p class="text-xs font-extrabold text-blue-600 mt-0.5">$${item.price.toFixed(2)}</p>
+                        <div class="flex items-center gap-2 mt-1.5">
+                            <button onclick="updateQuantity(${item.id}, -1)" class="w-5 h-5 rounded bg-white border border-slate-200 hover:bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-600 shadow-sm">
+                                <i class="fa-solid fa-minus text-[9px]"></i>
+                            </button>
+                            <span class="text-xs font-bold w-4 text-center">${item.quantity}</span>
+                            <button onclick="updateQuantity(${item.id}, 1)" class="w-5 h-5 rounded bg-white border border-slate-200 hover:bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-600 shadow-sm">
+                                <i class="fa-solid fa-plus text-[9px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button onclick="removeFromCart(${item.id})" class="p-2 text-slate-400 hover:text-red-500 transition">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto flex items-center gap-2 liquid-glass-blue text-white px-4 py-3 rounded-xl shadow-2xl text-xs sm:text-sm transition-all duration-300 transform translate-y-4 opacity-0 border border-white/30`;
+            toast.innerHTML = `
+                <i class="fa-solid fa-circle-check text-sky-300"></i>
+                <div>${message}</div>
+            `;
+
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-4', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-4', 'opacity-0');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 2500);
+        }
+
+        function openCart() {
+            cartDrawer.classList.remove('translate-x-full');
+            cartOverlay.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeCart() {
+            cartDrawer.classList.add('translate-x-full');
+            cartOverlay.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        cartBtn.addEventListener('click', openCart);
+        closeCartBtn.addEventListener('click', closeCart);
+        cartOverlay.addEventListener('click', closeCart);
+
+        // Search Input listeners
+        searchInput.addEventListener('input', (e) => {
+            if (e.target.value.length > 0) {
+                clearSearchBtn.classList.remove('hidden');
+            } else {
+                clearSearchBtn.classList.add('hidden');
+            }
+            renderProducts();
+        });
+
+        clearSearchBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            clearSearchBtn.classList.add('hidden');
+            renderProducts();
+        });
+
+        resetSearchBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            categoryFilter.value = 'all';
+            sortSelect.value = 'featured';
+            clearSearchBtn.classList.add('hidden');
+            switchTab('all');
+        });
+
+        categoryFilter.addEventListener('change', renderProducts);
+        sortSelect.addEventListener('change', renderProducts);
+
+        checkoutBtn.addEventListener('click', () => {
+            showToast('Checkout simulated! Thank you for your purchase.');
+            cart = [];
+            updateCartUI();
+            closeCart();
+        });
+
+        // Initialize display
+        window.onload = function() {
+            renderProducts();
+            updateCartUI();
+        };
+    </script>
+</body>
+</html>
